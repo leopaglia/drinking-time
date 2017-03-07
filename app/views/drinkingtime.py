@@ -17,7 +17,9 @@ class DrinkingTimeView(TemplateView):
 
     def get(self, request, *args, **kwargs):
 
-        gif_url = "{0}{1}.gif".format(settings.STATIC_ROOT, args[0])
+        gif_name = args[0] if args[0] else '1'
+
+        gif_url = "{0}{1}.gif".format(settings.STATIC_ROOT, gif_name)
         gif_data = open(gif_url, "rb").read()
 
         response = HttpResponse(gif_data, content_type="image/png")
