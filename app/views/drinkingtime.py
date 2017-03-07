@@ -42,13 +42,16 @@ class DrinkingTimeView(TemplateView):
         gif_url = self.get_gif_path()
 
         payload = {
-            'unfurl_links': True,
-            'text': '<{}>'.format(gif_url),
+            'text': '<{}|Drinking time>'.format(gif_url),
             'channel': channel,
-            'username': 'Drinking Time'
+            'username': 'Drinking Time',
+            "attachments": [
+                {
+                    "text": "Drinking time",
+                    "image_url": "http://leopaglia.pythonanywhere.com/"
+                }
+            ]
         }
-
-        # requests.post(response_url, data=payload)
 
         return HttpResponse(json.dumps(payload), content_type="application/json")
 
