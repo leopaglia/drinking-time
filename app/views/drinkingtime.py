@@ -8,8 +8,6 @@ import requests
 
 class DrinkingTimeView(TemplateView):
 
-    url = r"^$"
-
     def get(self, request, *args, **kwargs):
 
         gif_url = self.get_gif_path()
