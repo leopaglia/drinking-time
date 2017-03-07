@@ -23,32 +23,10 @@ class DrinkingTimeView(TemplateView):
 
     def post(self, request):
 
-        # token = gIkuvaNzQIHg97ATvDxqgjtO
-        # team_id = T0001
-        # team_domain = example
-        # channel_id = C2147483705
-        # channel_name = test
-        # user_id = U2147483697
-        # user_name = Steve
-        # command = /weather
-        # text = 94070
-        # response_url = https://hooks.slack.com/commands/1234/5678
-
         if request.POST.get('token') != settings.SLACK_TOKEN:
             return HttpResponse('Unauthorized', status=401)
 
-        channel = request.POST.get('channel')
-
-        payload = {
-            'channel': channel,
-            'username': 'Drinking Time',
-            "attachments": [
-                {
-                    "text": "Drinking time",
-                    "image_url": request.build_absolute_uri(reverse('drinkingtime'))
-                }
-            ]
-        }
+        payload = self.get_payload_for_request(request)
 
         return HttpResponse(json.dumps(payload), content_type="application/json")
 
@@ -74,3 +52,54 @@ class DrinkingTimeView(TemplateView):
 
         gif_name = next((gif for ((dfrom, dto), gif) in zip(intervals, gifs) if dfrom <= now <= dto), gifs[0])
         return settings.STATIC_ROOT + gif_name
+
+    @staticmethod
+    def get_payload_for_request(request):
+
+        # token = gIkuvaNzQIHg97ATvDxqgjtO
+        # team_id = T0001
+        # team_domain = example
+        # channel_id = C2147483705
+        # channel_name = test
+        # user_id = U2147483697
+        # user_name = Steve
+        # command = /drinkingtime
+        # text = one of {help, next, hours}
+        # response_url = https://hooks.slack.com/commands/1234/5678
+
+        text = request.POST.get('text')
+        channel = request.POST.get('channel')
+
+        payload = {
+            'channel': channel,
+            'username': 'Drinking Time'
+        }
+
+        if not text:
+            payload['response_type'] = 'in_channel'
+            payload['attachments'] = [{
+                "text": "Drinking time",
+                "image_url": request.build_absolute_uri(reverse('drinkingtime'))
+            }]
+
+        elif text == 'next':
+            payload['response_type'] = 'ephemeral'
+            payload['text'] = 'todavia no anda :D'
+
+        elif text == 'hours':
+            payload['response_type'] = 'ephemeral'
+            payload['text'] = 'todavia no anda :D'
+
+        elif text == 'help':
+            payload['response_type'] = 'ephemeral'
+            payload['text'] = (
+                "/drinkingtime - lenny tells everyone when sale shangai \n"
+                "/drinkingtime next - get the next hour when light changes \n"
+                "/drinkingtime hours - get the list of hours when the light changes \n"
+            )
+
+        else:
+            payload['response_type'] = 'ephemeral'
+            payload['text'] = 'Invalid argument specified. Try /drinkingtime help'
+
+        return payload
