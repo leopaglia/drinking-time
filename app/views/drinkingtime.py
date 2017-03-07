@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 
 from datetime import datetime
 import requests
+import json
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -47,9 +48,9 @@ class DrinkingTimeView(TemplateView):
             'username': 'Drinking Time'
         }
 
-        requests.post(response_url, data=payload)
+        # requests.post(response_url, data=payload)
 
-        return HttpResponse()
+        return HttpResponse(json.dumps(payload), content_type="application/json")
 
     @staticmethod
     def get_gif_path():
