@@ -21,7 +21,7 @@ class DrinkingTimeView(TemplateView):
         gif_data = open(gif_url, "rb").read()
 
         response = HttpResponse(gif_data, content_type="image/png")
-        response["Cache-Control"] = "max-age=0"
+        response["Cache-Control"] = "no-cache"
 
         return response
 
