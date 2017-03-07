@@ -5,8 +5,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+from django.core.urlresolvers import reverse
+
 from datetime import datetime
-import requests
 import json
 
 
@@ -37,18 +38,14 @@ class DrinkingTimeView(TemplateView):
             return HttpResponse('Unauthorized', status=401)
 
         channel = request.POST.get('channel')
-        response_url = request.POST.get('response_url')
-
-        gif_url = self.get_gif_path()
 
         payload = {
-            'text': '<{}|Drinking time>'.format(gif_url),
             'channel': channel,
             'username': 'Drinking Time',
             "attachments": [
                 {
                     "text": "Drinking time",
-                    "image_url": "http://leopaglia.pythonanywhere.com/"
+                    "image_url": request.build_absolute_uri(reverse('drinkingtime'))
                 }
             ]
         }
