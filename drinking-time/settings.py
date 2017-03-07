@@ -46,9 +46,10 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR + STATIC_URL
 
+# UTC daterange
 DATERANGE = {
-    "initial": '09:00:00',
-    "final": '18:00:00'
+    "initial": '12:00:00',
+    "final": '21:00:00'
 }
 
 SLACK_TOKEN = 'DExnhoykHU2zzB86ux7roUbT'

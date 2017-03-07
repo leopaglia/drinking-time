@@ -37,7 +37,7 @@ class DrinkingTimeView(TemplateView):
 
         intervals = self.get_intervals()
 
-        gif_name = next((gif for ((dfrom, dto), gif) in zip(intervals, gifs) if dfrom <= now <= dto), gifs[0])
+        gif_name = next((gif for ((dfrom, dto), gif) in zip(intervals, gifs) if dfrom.time() <= now.time() <= dto.time()), gifs[0])
         return settings.STATIC_ROOT + gif_name
 
     @staticmethod
@@ -76,6 +76,7 @@ class DrinkingTimeView(TemplateView):
         channel = request.POST.get('channel')
 
         now = datetime.now()
+        intervals = self.get_intervals()
 
         payload = {
             'channel': channel,
@@ -91,11 +92,11 @@ class DrinkingTimeView(TemplateView):
 
         elif text == 'next':
             payload['response_type'] = 'ephemeral'
-            payload['text'] = next(dfrom.strftime('%H:%M') for (dfrom, dto) in self.get_intervals() if dfrom >= now)
+            payload['text'] = next(dfrom.strftime('%H:%M') for (dfrom, dto) in intervals if dfrom.time() >= now.time())
 
         elif text == 'hours':
             payload['response_type'] = 'ephemeral'
-            payload['text'] = ' - '.join((dfrom.strftime('%H:%M') for (dfrom, dto) in self.get_intervals()))
+            payload['text'] = ' - '.join((dto.strftime('%H:%M') for (dfrom, dto) in intervals))
 
         elif text == 'help':
             payload['response_type'] = 'ephemeral'
