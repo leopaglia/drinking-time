@@ -101,7 +101,7 @@ class DrinkingTimeView(TemplateView):
             payload['response_type'] = 'in_channel'
             payload['attachments'] = [{
                 "text": "Drinking time",
-                "image_url": request.build_absolute_uri(reverse('drinkingtime'), args=[gifname])
+                "image_url": request.build_absolute_uri(reverse('drinkingtime', args=[gifname]))
             }]
 
         elif text == 'next':
