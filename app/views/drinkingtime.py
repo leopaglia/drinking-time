@@ -20,7 +20,10 @@ class DrinkingTimeView(TemplateView):
         gif_url = self.get_gif_path()
         gif_data = open(gif_url, "rb").read()
 
-        return HttpResponse(gif_data, content_type="image/png")
+        response = HttpResponse(gif_data, content_type="image/png")
+        response["Cache-Control"] = "max-age=0"
+
+        return response
 
     def post(self, request):
 
