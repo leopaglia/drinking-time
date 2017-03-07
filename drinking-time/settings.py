@@ -55,9 +55,9 @@ DATERANGE = {
 SLACK_TOKEN = 'DExnhoykHU2zzB86ux7roUbT'
 
 GIFS = [
-    '1.gif',
-    '2.gif',
-    '3.gif',
-    '4.gif',
-    '5.gif'
+    '1',
+    '2',
+    '3',
+    '4',
+    '5'
 ]

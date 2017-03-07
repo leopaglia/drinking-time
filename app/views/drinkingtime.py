@@ -17,7 +17,7 @@ class DrinkingTimeView(TemplateView):
 
     def get(self, request, *args, **kwargs):
 
-        gif_url = self.get_gif_path()
+        gif_url = "{0}{1}.gif".format(settings.STATIC_ROOT, args[0])
         gif_data = open(gif_url, "rb").read()
 
         response = HttpResponse(gif_data, content_type="image/png")
@@ -34,15 +34,13 @@ class DrinkingTimeView(TemplateView):
 
         return HttpResponse(json.dumps(payload), content_type="application/json")
 
-    def get_gif_path(self):
+    def get_gif_name(self):
 
-        gifs = settings.GIFS
         now = datetime.now()
+        gifs = settings.GIFS
+        ivs = self.get_intervals()
 
-        intervals = self.get_intervals()
-
-        gif_name = next((gif for ((dfrom, dto), gif) in zip(intervals, gifs) if dfrom.time() <= now.time() <= dto.time()), gifs[0])
-        return settings.STATIC_ROOT + gif_name
+        return next((gif for ((dfrom, dto), gif) in zip(ivs, gifs) if dfrom.time() <= now.time() <= dto.time()), '1')
 
     @staticmethod
     def get_intervals():
@@ -92,6 +90,8 @@ class DrinkingTimeView(TemplateView):
         text = request.POST.get('text')
         channel = request.POST.get('channel')
 
+        gifname = self.get_gif_name()
+
         payload = {
             'channel': channel,
             'username': 'Drinking Time'
@@ -101,7 +101,7 @@ class DrinkingTimeView(TemplateView):
             payload['response_type'] = 'in_channel'
             payload['attachments'] = [{
                 "text": "Drinking time",
-                "image_url": request.build_absolute_uri(reverse('drinkingtime'))
+                "image_url": request.build_absolute_uri(reverse('drinkingtime')) + gifname
             }]
 
         elif text == 'next':
