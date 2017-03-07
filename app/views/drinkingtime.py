@@ -30,8 +30,18 @@ class DrinkingTimeView(TemplateView):
 
         return HttpResponse(json.dumps(payload), content_type="application/json")
 
+    def get_gif_path(self):
+
+        gifs = settings.GIFS
+        now = datetime.now()
+
+        intervals = self.get_intervals()
+
+        gif_name = next((gif for ((dfrom, dto), gif) in zip(intervals, gifs) if dfrom <= now <= dto), gifs[0])
+        return settings.STATIC_ROOT + gif_name
+
     @staticmethod
-    def get_gif_path():
+    def get_intervals():
 
         gifs = settings.GIFS
 
@@ -42,19 +52,14 @@ class DrinkingTimeView(TemplateView):
 
         datetime_from = datetime.strptime(sfrom, fmt)
         datetime_to = datetime.strptime(sto, fmt)
-        now = datetime.now()
 
         delta = datetime_to - datetime_from
         distance_between_gifs = delta / len(gifs)
 
         points = [datetime_from + distance_between_gifs * x for x in range(0, 5)]
-        intervals = [(x, x + distance_between_gifs) for x in points]
+        return [(x, x + distance_between_gifs) for x in points]
 
-        gif_name = next((gif for ((dfrom, dto), gif) in zip(intervals, gifs) if dfrom <= now <= dto), gifs[0])
-        return settings.STATIC_ROOT + gif_name
-
-    @staticmethod
-    def get_payload_for_request(request):
+    def get_payload_for_request(self, request):
 
         # token = gIkuvaNzQIHg97ATvDxqgjtO
         # team_id = T0001
@@ -70,6 +75,8 @@ class DrinkingTimeView(TemplateView):
         text = request.POST.get('text')
         channel = request.POST.get('channel')
 
+        now = datetime.now()
+
         payload = {
             'channel': channel,
             'username': 'Drinking Time'
@@ -84,11 +91,11 @@ class DrinkingTimeView(TemplateView):
 
         elif text == 'next':
             payload['response_type'] = 'ephemeral'
-            payload['text'] = 'todavia no anda :D'
+            payload['text'] = next(dfrom.strftime('%H:%M') for (dfrom, dto) in self.get_intervals() if dfrom >= now)
 
         elif text == 'hours':
             payload['response_type'] = 'ephemeral'
-            payload['text'] = 'todavia no anda :D'
+            payload['text'] = ' - '.join((dfrom.strftime('%H:%M') for (dfrom, dto) in self.get_intervals()))
 
         elif text == 'help':
             payload['response_type'] = 'ephemeral'
