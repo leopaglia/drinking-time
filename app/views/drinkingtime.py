@@ -2,10 +2,14 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import HttpResponse
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 from datetime import datetime
 import requests
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class DrinkingTimeView(TemplateView):
 
     def get(self, request, *args, **kwargs):
@@ -24,7 +28,7 @@ class DrinkingTimeView(TemplateView):
         # channel_name = test
         # user_id = U2147483697
         # user_name = Steve
-        # command = / weather
+        # command = /weather
         # text = 94070
         # response_url = https://hooks.slack.com/commands/1234/5678
 
