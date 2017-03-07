@@ -17,8 +17,6 @@ class DrinkingTimeView(TemplateView):
 
     def get(self, request, *args, **kwargs):
 
-
-
         gif_url = self.get_gif_path()
         gif_data = open(gif_url, "rb").read()
 
@@ -59,7 +57,7 @@ class DrinkingTimeView(TemplateView):
         delta = datetime_to - datetime_from
         distance_between_gifs = delta / len(gifs)
 
-        points = [datetime_from + distance_between_gifs * x for x in range(0, 5)]
+        points = [datetime_from + distance_between_gifs * (x + 1) for x in range(0, 5)]
         return [(x, x + distance_between_gifs) for x in points]
 
     def get_next_change(self):
