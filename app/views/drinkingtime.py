@@ -25,7 +25,7 @@ class DrinkingTimeView(TemplateView):
 
         return response
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
 
         if request.POST.get('token') != settings.SLACK_TOKEN:
             return HttpResponse('Unauthorized', status=401)
@@ -101,7 +101,7 @@ class DrinkingTimeView(TemplateView):
             payload['response_type'] = 'in_channel'
             payload['attachments'] = [{
                 "text": "Drinking time",
-                "image_url": request.build_absolute_uri(reverse('drinkingtime', args=[1]))
+                "image_url": request.build_absolute_uri(reverse('drinkingtime', args=[gifname]))
             }]
 
         elif text == 'next':
