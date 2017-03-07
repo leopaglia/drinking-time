@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
 
 from datetime import datetime
+from datetime import timedelta
 import json
 
 
@@ -15,6 +16,8 @@ import json
 class DrinkingTimeView(TemplateView):
 
     def get(self, request, *args, **kwargs):
+
+
 
         gif_url = self.get_gif_path()
         gif_data = open(gif_url, "rb").read()
@@ -59,6 +62,19 @@ class DrinkingTimeView(TemplateView):
         points = [datetime_from + distance_between_gifs * x for x in range(0, 5)]
         return [(x, x + distance_between_gifs) for x in points]
 
+    def get_next_change(self):
+
+        now = datetime.now()
+        intervals = self.get_intervals()
+
+        return next((dfrom - timedelta(hours=3)).strftime('%H:%M') for (dfrom, dto) in intervals if dfrom.time() >= now.time())
+
+    def get_every_change(self):
+
+        intervals = self.get_intervals()
+
+        return ' - '.join((dto - timedelta(hours=3)).strftime('%H:%M') for (dfrom, dto) in intervals)
+
     def get_payload_for_request(self, request):
 
         # token = gIkuvaNzQIHg97ATvDxqgjtO
@@ -75,9 +91,6 @@ class DrinkingTimeView(TemplateView):
         text = request.POST.get('text')
         channel = request.POST.get('channel')
 
-        now = datetime.now()
-        intervals = self.get_intervals()
-
         payload = {
             'channel': channel,
             'username': 'Drinking Time'
@@ -92,11 +105,11 @@ class DrinkingTimeView(TemplateView):
 
         elif text == 'next':
             payload['response_type'] = 'ephemeral'
-            payload['text'] = next(dfrom.strftime('%H:%M') for (dfrom, dto) in intervals if dfrom.time() >= now.time())
+            payload['text'] = self.get_next_change()
 
         elif text == 'hours':
             payload['response_type'] = 'ephemeral'
-            payload['text'] = ' - '.join((dto.strftime('%H:%M') for (dfrom, dto) in intervals))
+            payload['text'] = self.get_every_change()
 
         elif text == 'help':
             payload['response_type'] = 'ephemeral'

@@ -46,7 +46,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR + STATIC_URL
 
-# UTC daterange
+# UTC daterange (09:00 - 18:00 in GMT -3)
 DATERANGE = {
     "initial": '12:00:00',
     "final": '21:00:00'
